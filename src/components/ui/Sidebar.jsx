@@ -1,32 +1,14 @@
 import { Icon } from "@iconify/react";
 import { NavLink } from "react-router-dom";
-import { useEffect, useState } from "react";
 
-const Sidebar = ({ role, username, routes }) => {
-    const [showMenu, setShowMenu] = useState(true);
-
-    // Responsive auto behavior
-    useEffect(() => {
-        const handleResize = () => {
-            if (window.innerWidth < 900) {
-                setShowMenu(false);
-            } else {
-                setShowMenu(true);
-            }
-        };
-
-        handleResize();
-        window.addEventListener("resize", handleResize);
-
-        return () => window.removeEventListener("resize", handleResize);
-    }, []);
+const Sidebar = ({ role, username, routes,showMenu, setShowMenu }) => {
 
     return (
         <>
             <div
                 className={`
                     fixed top-0 left-0 h-full  overflow-y-auto scrollbar w-[75%] md:w-[20%]
-                    bg-white shadow-md flex flex-col justify-between
+                    bg-white border border-gray-100 shadow-[0_2px_12px_rgba(0,0,0,0.08)] hover:shadow-[0_4px_20px_rgba(0,0,0,0.12)]  flex flex-col justify-between
                     py-6 px-6 z-40 scrollbar-hide
                     transform transition-transform duration-300 ease-in-out
                     ${showMenu ? "translate-x-0" : "-translate-x-full"}
@@ -82,7 +64,7 @@ const Sidebar = ({ role, username, routes }) => {
                 <button
                     className="flex gap-2 px-8 py-2 border-2 border-gray-400 mx-auto rounded-md
                     hover:bg-gray-900 hover:shadow-lg hover:scale-[1.02] hover:text-white
-                    active:scale-[0.98] transition-all"
+                    active:scale-[0.98] transition-all mt-2"
                 >
                     <Icon icon="material-symbols:logout" width={22} height={22} />
                     <span className="text-sm">Logout</span>
