@@ -9,6 +9,7 @@ const Input = ({
   onChange,
   name,
   isPassword = false,
+  disable=false
 }) => {
   const [showPassword, setShowPassword] = useState(false);
 
@@ -21,7 +22,8 @@ const Input = ({
         value={value}
         id={id}
         onChange={onChange}
-        className="block w-full my-2 text-gray-600 bg-gray rounded-md border-none py-2 px-4 pr-10 outline-none placeholder:text-gray-400 placeholder:font-semibold focus:ring-2 focus:ring-blueborder focus:ring-offset-2 focus:ring-offset-gray-100"
+        disabled={disable}
+        className={`block w-full my-2 text-gray-600 bg-gray rounded-md border-none py-2 px-4 pr-10 outline-none placeholder:text-gray-400 placeholder:font-semibold focus:ring-2 focus:ring-blueborder focus:ring-offset-2 focus:ring-offset-gray-100 ${disable ? 'cursor-not-allowed opacity-50 bg-gray-400 text-white' : '' }`}
       />
 
       {isPassword && (

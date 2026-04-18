@@ -17,7 +17,6 @@ const Login = () => {
             [name]: value
         }));
 
-        console.log(formData)
     }
 
     const handleSubmit = (e) => {
