@@ -1,47 +1,62 @@
 import { Icon } from "@iconify/react";
-import { NavLink } from "react-router-dom";
+import { NavLink, useNavigate } from "react-router-dom";
+import { useAuth } from "../../context/AuthContext";
+import { useTheme } from "../../context/ThemeContext";
 
-const Sidebar = ({ role, username, routes,showMenu, setShowMenu }) => {
+const Sidebar = ({ role, username, routes, showMenu, setShowMenu }) => {
+    const { logout } = useAuth();
+    const { isDark, toggleTheme } = useTheme();
+    const navigate = useNavigate();
+
+    const handleLogout = async () => {
+        await logout();
+        navigate('/');
+    };
 
     return (
         <>
             <div
                 className={`
-                    fixed top-0 left-0 h-full  overflow-y-auto scrollbar w-[75%] md:w-[20%]
-                    bg-white border border-gray-100 shadow-[0_2px_12px_rgba(0,0,0,0.08)] hover:shadow-[0_4px_20px_rgba(0,0,0,0.12)]  flex flex-col justify-between
+                    fixed top-0 left-0 h-full overflow-y-auto scrollbar w-[75%] md:w-[20%]
+                    flex flex-col justify-between
                     py-6 px-6 z-40 scrollbar-hide
                     transform transition-transform duration-300 ease-in-out
                     ${showMenu ? "translate-x-0" : "-translate-x-full"}
                 `}
+                style={{
+                    background: 'var(--bg-sidebar)',
+                    borderRight: '1px solid var(--border-primary)',
+                    boxShadow: 'var(--shadow-lg)',
+                }}
             >
                 <div>
-                    <div className="flex border-b-2 border-gray-200 w-full items-center gap-2 pb-4">
-                        <div className="bg-bluelogo p-2 rounded-md">
+                    <div className="flex w-full items-center gap-2 pb-4" style={{ borderBottom: '2px solid var(--border-primary)' }}>
+                        <div style={{ background: 'var(--accent-gradient)', padding: '8px', borderRadius: '8px' }}>
                             <Icon icon="mingcute:suitcase-line" width={30} height={30} className="text-white" />
                         </div>
                         <div>
-                            <h1 className="text-lg font-extrabold mt-2 font-grotesk">
-                                Job Glide
+                            <h1 className="text-lg font-extrabold mt-2 font-grotesk" style={{ color: 'var(--text-primary)' }}>
+                                CrewWise
                             </h1>
-                            <p className="text-sm font-normal font-grotesk">
+                            <p className="text-sm font-normal font-grotesk" style={{ color: 'var(--text-tertiary)' }}>
                                 Field Management
                             </p>
                         </div>
                     </div>
 
-                    <div className="flex border-b-2 border-gray-200 w-full items-center gap-2 py-4">
-                        <div className="bg-black p-2 rounded-full">
+                    <div className="flex w-full items-center gap-2 py-4" style={{ borderBottom: '2px solid var(--border-primary)' }}>
+                        <div className="p-2 rounded-full" style={{ background: 'var(--accent-gradient)' }}>
                             <Icon icon="iconamoon:profile" width={30} height={30} className="text-white" />
                         </div>
                         <div>
-                            <h1 className="text-sm font-semibold mt-2 font-grotesk">
+                            <h1 className="text-sm font-semibold mt-2 font-grotesk" style={{ color: 'var(--text-primary)' }}>
                                 {username}
                             </h1>
-                            <p className="text-sm font-normal font-grotesk">{role}</p>
+                            <p className="text-sm font-normal font-grotesk" style={{ color: 'var(--text-tertiary)' }}>{role}</p>
                         </div>
                     </div>
 
-                    <nav className="flex flex-col w-full border-b border-gray-200 py-4">
+                    <nav className="flex flex-col w-full py-4" style={{ borderBottom: '1px solid var(--border-primary)' }}>
                         {routes.map((route, index) => (
                             <NavLink
                                 key={index}
@@ -49,10 +64,24 @@ const Sidebar = ({ role, username, routes,showMenu, setShowMenu }) => {
                                 onClick={() => window.innerWidth < 900 && setShowMenu(false)}
                                 className={({ isActive }) =>
                                     `flex items-center gap-3 px-4 py-3 rounded-lg transition-all duration-200 ${isActive
-                                        ? "bg-[#4D6EF027] text-[#4D6EF0] font-medium"
-                                        : "text-gray-700 hover:bg-gray-100"
+                                        ? "font-medium"
+                                        : ""
                                     }`
                                 }
+                                style={({ isActive }) => ({
+                                    background: isActive ? 'var(--accent-light)' : 'transparent',
+                                    color: isActive ? 'var(--accent)' : 'var(--text-secondary)',
+                                })}
+                                onMouseEnter={(e) => {
+                                    if (!e.currentTarget.classList.contains('font-medium')) {
+                                        e.currentTarget.style.background = 'var(--bg-hover)';
+                                    }
+                                }}
+                                onMouseLeave={(e) => {
+                                    if (!e.currentTarget.classList.contains('font-medium')) {
+                                        e.currentTarget.style.background = 'transparent';
+                                    }
+                                }}
                             >
                                 <Icon icon={route.icon} width={22} height={22} />
                                 <span className="text-sm">{route.text}</span>
@@ -61,21 +90,56 @@ const Sidebar = ({ role, username, routes,showMenu, setShowMenu }) => {
                     </nav>
                 </div>
 
-                <button
-                    className="flex gap-2 px-8 py-2 border-2 border-gray-400 mx-auto rounded-md
-                    hover:bg-gray-900 hover:shadow-lg hover:scale-[1.02] hover:text-white
-                    active:scale-[0.98] transition-all mt-2"
-                >
-                    <Icon icon="material-symbols:logout" width={22} height={22} />
-                    <span className="text-sm">Logout</span>
-                </button>
+                <div className="space-y-3 mt-4">
+                    {/* Theme Toggle */}
+                    <button
+                        onClick={toggleTheme}
+                        className="flex items-center gap-3 w-full px-4 py-2.5 rounded-lg transition-all duration-200 cursor-pointer"
+                        style={{
+                            background: 'var(--bg-hover)',
+                            color: 'var(--text-secondary)',
+                        }}
+                        onMouseEnter={e => e.currentTarget.style.background = 'var(--accent-light)'}
+                        onMouseLeave={e => e.currentTarget.style.background = 'var(--bg-hover)'}
+                    >
+                        <Icon icon={isDark ? "ph:sun-bold" : "ph:moon-bold"} width={20} height={20} />
+                        <span className="text-sm font-medium">{isDark ? 'Light Mode' : 'Dark Mode'}</span>
+                    </button>
+
+                    {/* Logout */}
+                    <button
+                        onClick={handleLogout}
+                        className="flex gap-2 items-center justify-center px-8 py-2 mx-auto rounded-md
+                        transition-all cursor-pointer"
+                        style={{
+                            border: '2px solid var(--border-primary)',
+                            color: 'var(--text-secondary)',
+                        }}
+                        onMouseEnter={e => {
+                            e.currentTarget.style.background = 'var(--error)';
+                            e.currentTarget.style.borderColor = 'var(--error)';
+                            e.currentTarget.style.color = '#fff';
+                            e.currentTarget.style.transform = 'scale(1.02)';
+                        }}
+                        onMouseLeave={e => {
+                            e.currentTarget.style.background = 'transparent';
+                            e.currentTarget.style.borderColor = 'var(--border-primary)';
+                            e.currentTarget.style.color = 'var(--text-secondary)';
+                            e.currentTarget.style.transform = 'scale(1)';
+                        }}
+                    >
+                        <Icon icon="material-symbols:logout" width={22} height={22} />
+                        <span className="text-sm">Logout</span>
+                    </button>
+                </div>
             </div>
 
             <button
                 onClick={() => setShowMenu(prev => !prev)}
-                className="fixed bottom-4 right-4 bg-black text-white rounded-full p-4 z-50
-                    hover:bg-gray-900 hover:shadow-lg hover:scale-[1.05]
+                className="fixed bottom-4 right-4 text-white rounded-full p-4 z-50
+                    hover:shadow-lg hover:scale-[1.05]
                     active:scale-[0.95] transition-all"
+                style={{ background: 'var(--accent)' }}
             >
                 <Icon icon="gg:menu-round" width="24" height="24" />
             </button>

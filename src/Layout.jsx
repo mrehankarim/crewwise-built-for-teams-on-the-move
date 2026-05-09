@@ -1,9 +1,12 @@
 import { Outlet } from "react-router-dom"
 import Sidebar from "./components/ui/Sidebar"
 import { useEffect, useState } from "react";
+import { useAuth } from "./context/AuthContext";
+
 const Layout = ({ routes }) => {
+    const { user } = useAuth();
     const [showMenu, setShowMenu] = useState(true);
-    console.log(showMenu)
+
     useEffect(() => {
         const handleResize = () => {
             if (window.innerWidth < 900) {
@@ -18,9 +21,16 @@ const Layout = ({ routes }) => {
 
         return () => window.removeEventListener("resize", handleResize);
     }, []);
+
     return (
         <div className="flex">
-            <Sidebar username={"Muhammad Rehan"} role={"Manager"} routes={routes} showMenu={showMenu} setShowMenu={setShowMenu} />
+            <Sidebar
+                username={user?.name || "User"}
+                role={user?.role?.charAt(0).toUpperCase() + user?.role?.slice(1) || "User"}
+                routes={routes}
+                showMenu={showMenu}
+                setShowMenu={setShowMenu}
+            />
 
             <div
                 className="transition-all duration-300 ease-in-out w-full"
@@ -32,8 +42,6 @@ const Layout = ({ routes }) => {
                 <Outlet />
             </div>
         </div>
-
-
     )
 }
 

@@ -3,21 +3,30 @@ import React from 'react'
 
 const SummaryCard = ({ name, count, icon, message, iconColor, bgColor }) => {
   return (
-    <div className='flex flex-col justify-between bg-white rounded-2xl p-5 gap-3 border border-gray-100 shadow-[0_2px_12px_rgba(0,0,0,0.08)] hover:shadow-[0_4px_20px_rgba(0,0,0,0.12)] transition-shadow duration-300'>
+    <div
+      className='flex flex-col justify-between rounded-2xl p-5 gap-3 transition-shadow duration-300'
+      style={{
+        background: 'var(--bg-card)',
+        border: '1px solid var(--border-primary)',
+        boxShadow: 'var(--shadow-sm)',
+      }}
+      onMouseEnter={e => e.currentTarget.style.boxShadow = 'var(--shadow-md)'}
+      onMouseLeave={e => e.currentTarget.style.boxShadow = 'var(--shadow-sm)'}
+    >
       
       <div className='flex justify-between items-start'>
-        <p className='text-sm font-medium text-gray-400'>{name}</p>
+        <p className='text-sm font-medium' style={{ color: 'var(--text-tertiary)' }}>{name}</p>
         <div className='p-2 rounded-xl' style={{ backgroundColor: bgColor }}>
           <Icon icon={icon} width={20} height={20} color={iconColor} />
         </div>
       </div>
 
-      <p className='text-3xl font-bold text-gray-800'>{count}</p>
+      <p className='text-3xl font-bold' style={{ color: 'var(--text-primary)' }}>{count}</p>
 
-      <div className='border-t border-gray-100' />
+      <div style={{ borderTop: '1px solid var(--border-secondary)' }} />
 
     
-      <p className='text-xs font-medium text-gray-400'>{message}</p>
+      <p className='text-xs font-medium' style={{ color: 'var(--text-tertiary)' }}>{message}</p>
 
     </div>
   )

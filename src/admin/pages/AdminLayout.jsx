@@ -1,5 +1,5 @@
 import React from 'react'
-import Layout from '../../layout'
+import Layout from '../../Layout'
 
 const AdminLayout = () => {
     const routes=[
@@ -9,36 +9,31 @@ const AdminLayout = () => {
             icon:"material-symbols:dashboard-outline",
         },
         {
-            path:"/admin/work-orders",
-            text:"Work Orders",
-            icon:"akar-icons:clipboard",
+            path:"/admin/organizations",
+            text:"Organizations",
+            icon:"mdi:office-building",
         },
         {
-            path:"/admin/workers",
-            text:"Workers",
+            path:"/admin/users",
+            text:"All Users",
             icon:"fluent:people-12-regular",
         },
         {
-            path:"/admin/scheduler",
-            text:"Scheduler",
-            icon:"uil:calendar",
+            path:"/admin/subscriptions",
+            text:"Subscriptions",
+            icon:"mdi:crown",
         },
         {
-            path:"/admin/attendance",
-            text:"Attendance",
-            icon:"akar-icons:clock",
-        },
-        {
-            path:"/admin/reports",
-            text:"Reports",
-            icon:"mdi:report-line",
+            path:"/admin/plans",
+            text:"Plans",
+            icon:"mdi:cash-register",
         },
         {
             path:"/admin/notifications",
             text:"Notifications",
             icon:"lucide:bell",
         },
-         {
+        {
             path:"/admin/profile",
             text:"Profile",
             icon:"octicon:gear-16",
