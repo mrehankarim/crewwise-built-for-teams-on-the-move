@@ -6,6 +6,10 @@ export const organizationAPI = {
   update: (orgId, data) => api.put(`/organizations/${orgId}`, data),
   getDashboard: (orgId) => api.get(`/organizations/${orgId}/dashboard`),
 
+  // One-step user creation: register + add to org + store temp password
+  createManagedUser: (data) => api.post('/organizations/managed-user/create', data),
+  getManagedUserCredentials: (userId) => api.get(`/organizations/managed-user/${userId}/credentials`),
+
   getSubmanagers: (orgId) => api.get(`/organizations/${orgId}/submanagers`),
   addSubmanager: (userId) => api.post('/organizations/submanager/add', { userId }),
   removeSubmanager: (userId) => api.delete(`/organizations/submanager/${userId}/remove`),
@@ -28,7 +32,9 @@ export const organizationAPI = {
   getTotalManagers: (orgId) => api.get(`/organizations/${orgId}/managers/total`),
   getTotalContractors: (orgId) => api.get(`/organizations/${orgId}/contractors/total`),
   getTotalTechnicians: (orgId) => api.get(`/organizations/${orgId}/technicians/total`),
+  getAll: (params) => api.get('/organizations/all', { params }),
 };
+
 
 export const workOrderAPI = {
   create: (data) => api.post('/work-orders', data),
@@ -43,6 +49,7 @@ export const workOrderAPI = {
   getStats: (orgId) => api.get(`/work-orders/organization/${orgId}/stats`),
   addPart: (id, data) => api.post(`/work-orders/${id}/parts`, data),
   removePart: (id, itemId) => api.delete(`/work-orders/${id}/parts/${itemId}`),
+  getAll: (params) => api.get('/work-orders/all', { params }),
 };
 
 export const clientAPI = {
@@ -61,7 +68,9 @@ export const inventoryAPI = {
   getById: (id) => api.get(`/inventory/${id}`),
   update: (id, data) => api.put(`/inventory/${id}`, data),
   delete: (id) => api.delete(`/inventory/${id}`),
-  getByOrganization: (orgId) => api.get(`/inventory/organization/${orgId}`),
+  getByOrganization: (orgId, params) => api.get(`/inventory/organization/${orgId}`, { params }),
+  returnPart: (workOrderId, inventoryItemId, quantity) =>
+    api.post(`/work-orders/${workOrderId}/parts/return`, { inventoryItemId, quantity }),
 };
 
 export const scheduleAPI = {
@@ -80,9 +89,11 @@ export const attendanceAPI = {
 
 export const notificationAPI = {
   getMy: () => api.get('/notifications'),
+  getUnreadCount: () => api.get('/notifications/unread-count'),
   markRead: (id) => api.patch(`/notifications/${id}/read`),
   markAllRead: () => api.patch('/notifications/mark-all-read'),
   delete: (id) => api.delete(`/notifications/${id}`),
+  deleteAll: () => api.delete('/notifications/delete-all'),
 };
 
 export const planAPI = {
@@ -92,6 +103,8 @@ export const planAPI = {
   update: (id, data) => api.put(`/plans/${id}`, data),
   delete: (id) => api.delete(`/plans/${id}`),
 };
+
+
 
 export const subscriptionAPI = {
   subscribe: (data) => api.post('/subscriptions', data),
@@ -128,6 +141,7 @@ export const skillAPI = {
 };
 
 export const authAPI = {
+  register: (data) => api.post('/auth/register', data),
   getAllUsers: (params) => api.get('/auth/users', { params }),
   getUserById: (id) => api.get(`/auth/users/${id}`),
   updateUserRole: (id, role) => api.patch(`/auth/users/${id}/role`, { role }),

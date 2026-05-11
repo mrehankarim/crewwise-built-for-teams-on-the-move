@@ -76,8 +76,10 @@ export const AuthProvider = ({ children }) => {
   const fetchMe = async () => {
     try {
       const res = await api.get('/auth/me');
-      setUser(res.data.data);
-      return res.data.data;
+      const { user: userData, subscriptionStatus: subStatus } = res.data.data;
+      setUser(userData);
+      setSubscriptionStatus(subStatus);
+      return userData;
     } catch (err) {
       return null;
     }

@@ -2,8 +2,9 @@ import { useState, useEffect } from 'react';
 import { Icon } from '@iconify/react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';
-import { planAPI, subscriptionAPI } from '../../api/services';
+import { planAPI, subscriptionAPI, paymentAPI } from '../../api/services';
 import toast from 'react-hot-toast';
+import { PayPalScriptProvider, PayPalButtons } from '@paypal/react-paypal-js';
 import { useTheme } from '../../context/ThemeContext';
 
 const Subscribe = () => {
@@ -14,6 +15,7 @@ const Subscribe = () => {
     const [loading, setLoading] = useState(true);
     const [subscribing, setSubscribing] = useState(false);
     const [selectedPlan, setSelectedPlan] = useState(null);
+    const [pendingInvoice, setPendingInvoice] = useState(null);
 
     useEffect(() => {
         const fetchPlans = async () => {
@@ -38,17 +40,30 @@ const Subscribe = () => {
         setSubscribing(true);
         setSelectedPlan(planId);
         try {
-            await subscriptionAPI.subscribe({
+            const res = await subscriptionAPI.subscribe({
                 planId,
                 organizationId: user.organization._id || user.organization,
             });
-            setSubscriptionStatus({ active: true });
-            await fetchMe();
-            toast.success('Subscribed successfully!');
-            navigate('/manager/dashboard');
+            const invoice = res.data.data.invoice;
+            setPendingInvoice(invoice);
+            toast.success('Subscription created! Please complete payment.');
         } catch (err) {
             toast.error(err.response?.data?.message || 'Subscription failed');
-        } finally {
+            setSubscribing(false);
+            setSelectedPlan(null);
+        }
+    };
+
+    const handleApprove = async (data, actions) => {
+        try {
+            await paymentAPI.capturePaypalOrder(data.orderID);
+            setSubscriptionStatus({ active: true });
+            await fetchMe();
+            toast.success('Payment successful! Subscribed to plan.');
+            navigate('/manager/dashboard');
+        } catch (err) {
+            toast.error('Payment capture failed. Please try again.');
+            setPendingInvoice(null);
             setSubscribing(false);
             setSelectedPlan(null);
         }
@@ -116,62 +131,83 @@ const Subscribe = () => {
                     {plans.map((plan, idx) => (
                         <div
                             key={plan._id}
-                            className={`w-80 rounded-2xl border shadow-lg overflow-hidden
-                                transition-all duration-300 hover:shadow-2xl hover:scale-[1.03] hover:-translate-y-1 animate-slideUp`}
-                            style={{ animationDelay: `${idx * 0.1}s`, background: 'var(--bg-card)', borderColor: 'var(--border-primary)' }}
+                            className={`w-80 rounded-2xl border overflow-hidden
+                                transition-all duration-300 hover:shadow-2xl hover:scale-[1.03] animate-slideUp`}
+                            style={{ 
+                                animationDelay: `${idx * 0.1}s`, 
+                                background: 'var(--bg-card)', 
+                                borderColor: 'var(--border-primary)',
+                                boxShadow: 'var(--shadow-lg)'
+                            }}
                         >
-                            <div className={`bg-gradient-to-r ${planColors[idx % 3]} p-6 text-white`}>
-                                <div className="flex items-center justify-between">
-                                    <Icon icon={planIcons[idx % 3]} width={32} height={32} />
+                            <div className={`bg-gradient-to-br ${planColors[idx % 3]} p-8 text-white relative overflow-hidden`}>
+                                <div className="absolute top-0 right-0 p-4 opacity-10">
+                                    <Icon icon={planIcons[idx % 3]} width={100} height={100} />
+                                </div>
+                                <div className="flex items-center justify-between relative z-10">
+                                    <div className="p-2 bg-white/20 rounded-lg backdrop-blur-md">
+                                        <Icon icon={planIcons[idx % 3]} width={28} height={28} />
+                                    </div>
                                     {idx === 1 && (
-                                        <span className="bg-white/20 text-xs px-3 py-1 rounded-full font-medium backdrop-blur-sm">
-                                            Popular
+                                        <span className="bg-white text-indigo-600 text-[10px] px-3 py-1 rounded-full font-bold uppercase tracking-wider shadow-sm">
+                                            Recommended
                                         </span>
                                     )}
                                 </div>
-                                <h3 className="text-xl font-bold mt-3">{plan.name}</h3>
-                                <div className="flex items-baseline gap-1 mt-2">
-                                    <span className="text-3xl font-extrabold">${plan.price}</span>
-                                    <span className="text-white/70 text-sm">/{plan.duration || 30} days</span>
+                                <h3 className="text-2xl font-bold mt-4 relative z-10">{plan.name}</h3>
+                                <div className="flex items-baseline gap-1 mt-2 relative z-10">
+                                    <span className="text-4xl font-black">${plan.price}</span>
+                                    <span className="text-white/80 text-xs font-medium uppercase tracking-widest">/{plan.duration || 30} days</span>
                                 </div>
                             </div>
 
-                            <div className="p-6">
-                                <div className="space-y-3">
+                            <div className="p-8">
+                                <div className="space-y-4">
                                     <div className="flex items-center gap-3 text-sm" style={{ color: 'var(--text-secondary)' }}>
-                                        <Icon icon="mdi:check-circle" width={18} className="text-green-500 flex-shrink-0" />
+                                        <div className="p-1 rounded-full bg-green-500/10">
+                                            <Icon icon="mdi:check" width={14} className="text-green-500" />
+                                        </div>
                                         <span>Up to <strong style={{ color: 'var(--text-primary)' }}>{plan.maxUsers}</strong> team members</span>
                                     </div>
                                     <div className="flex items-center gap-3 text-sm" style={{ color: 'var(--text-secondary)' }}>
-                                        <Icon icon="mdi:check-circle" width={18} className="text-green-500 flex-shrink-0" />
+                                        <div className="p-1 rounded-full bg-green-500/10">
+                                            <Icon icon="mdi:check" width={14} className="text-green-500" />
+                                        </div>
                                         <span>Up to <strong style={{ color: 'var(--text-primary)' }}>{plan.maxWorkOrders}</strong> work orders</span>
                                     </div>
                                     <div className="flex items-center gap-3 text-sm" style={{ color: 'var(--text-secondary)' }}>
-                                        <Icon icon="mdi:check-circle" width={18} className="text-green-500 flex-shrink-0" />
+                                        <div className="p-1 rounded-full bg-green-500/10">
+                                            <Icon icon="mdi:check" width={14} className="text-green-500" />
+                                        </div>
                                         <span>Full dashboard & reports</span>
                                     </div>
                                     <div className="flex items-center gap-3 text-sm" style={{ color: 'var(--text-secondary)' }}>
-                                        <Icon icon="mdi:check-circle" width={18} className="text-green-500 flex-shrink-0" />
-                                        <span>Worker & schedule management</span>
+                                        <div className="p-1 rounded-full bg-green-500/10">
+                                            <Icon icon="mdi:check" width={14} className="text-green-500" />
+                                        </div>
+                                        <span>Priority Support</span>
                                     </div>
                                 </div>
 
                                 <button
                                     onClick={() => handleSubscribe(plan._id)}
                                     disabled={subscribing}
-                                    className={`w-full mt-6 py-3 rounded-xl font-semibold text-sm transition-all duration-200
-                                        hover:shadow-lg hover:scale-[1.02] active:scale-[0.98]
+                                    className={`w-full mt-8 py-4 rounded-xl font-bold text-xs uppercase tracking-widest transition-all duration-300
+                                        hover:shadow-xl hover:scale-[1.02] active:scale-[0.98]
                                         disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2
                                         ${idx === 1
-                                            ? 'bg-bluelogo text-white hover:shadow-bluelogo/25'
-                                            : 'bg-gray-900 text-white hover:bg-gray-800'
+                                            ? 'bg-bluelogo text-white hover:shadow-bluelogo/30 shadow-lg shadow-bluelogo/20'
+                                            : 'bg-gray-800 text-white hover:bg-black'
                                         }`}
+                                    style={idx !== 1 ? { background: 'var(--text-primary)', color: 'var(--bg-card)' } : {}}
                                     id={`subscribe-plan-${plan._id}`}
                                 >
                                     {subscribing && selectedPlan === plan._id ? (
-                                        <Icon icon="mdi:loading" width={20} className="animate-spin" />
-                                    ) : null}
-                                    {subscribing && selectedPlan === plan._id ? 'Processing...' : 'Get Started'}
+                                        <Icon icon="mdi:loading" width={18} className="animate-spin" />
+                                    ) : (
+                                        <Icon icon="mdi:rocket-launch" width={18} />
+                                    )}
+                                    {subscribing && selectedPlan === plan._id ? 'Processing...' : 'Choose Plan'}
                                 </button>
                             </div>
                         </div>
@@ -184,6 +220,75 @@ const Subscribe = () => {
                     <Icon icon="mdi:alert-circle-outline" width={48} className="mx-auto mb-3 opacity-50" />
                     <p className="font-medium">No plans available yet</p>
                     <p className="text-sm">Please contact the administrator to set up subscription plans.</p>
+                </div>
+            )}
+
+            {pendingInvoice && (
+                <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm p-4 animate-fadeIn">
+                    <div className="bg-white dark:bg-gray-900 rounded-3xl p-8 max-w-md w-full shadow-2xl animate-slideUp">
+                        <div className="text-center mb-6">
+                            <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-2">Complete Payment</h2>
+                            <p className="text-gray-500 dark:text-gray-400">
+                                You are subscribing to the selected plan for <strong>${pendingInvoice.amount}</strong>.
+                            </p>
+                        </div>
+                        <PayPalScriptProvider options={{ "client-id": import.meta.env.VITE_PAYPAL_CLIENT_ID || "test", currency: "USD" }}>
+                            <PayPalButtons
+                                createOrder={async () => {
+                                    try {
+                                        const res = await paymentAPI.createPaypalOrder({ invoiceId: pendingInvoice._id });
+                                        return res.data.data.paypalOrderId;
+                                    } catch (error) {
+                                        toast.error("Failed to initiate PayPal checkout");
+                                        throw error;
+                                    }
+                                }}
+                                onApprove={handleApprove}
+                                onCancel={() => {
+                                    toast.error('Payment was cancelled');
+                                    setPendingInvoice(null);
+                                    setSubscribing(false);
+                                    setSelectedPlan(null);
+                                }}
+                                onError={() => {
+                                    toast.error('PayPal encountered an error');
+                                    setPendingInvoice(null);
+                                    setSubscribing(false);
+                                    setSelectedPlan(null);
+                                }}
+                                style={{ layout: "vertical", shape: "rect" }}
+                            />
+                        </PayPalScriptProvider>
+                        {import.meta.env.DEV && (
+                            <button 
+                                onClick={async () => {
+                                    try {
+                                        await paymentAPI.capturePaypalOrder(`DEV_BYPASS_${pendingInvoice._id}`);
+                                        setSubscriptionStatus({ active: true });
+                                        await fetchMe();
+                                        toast.success('Dev Payment successful! Subscribed to plan.');
+                                        navigate('/manager/dashboard');
+                                    } catch (err) {
+                                        toast.error('Dev Payment failed.');
+                                    }
+                                }}
+                                className="w-full mt-2 py-3 rounded-xl font-bold text-sm bg-purple-100 text-purple-700 hover:bg-purple-200 transition-colors flex items-center justify-center gap-2"
+                            >
+                                <Icon icon="mdi:test-tube" width={18} />
+                                Mock Payment (Dev Mode)
+                            </button>
+                        )}
+                        <button 
+                            onClick={() => {
+                                setPendingInvoice(null);
+                                setSubscribing(false);
+                                setSelectedPlan(null);
+                            }}
+                            className="w-full mt-4 py-3 rounded-xl font-bold text-sm text-gray-500 hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors"
+                        >
+                            Cancel Payment
+                        </button>
+                    </div>
                 </div>
             )}
         </div>

@@ -3,7 +3,7 @@ import WorkOrderCard from '../WorkOrderCard '
 
 const WorkerOrdersList = ({ workOrders = [] }) => {
   return (
-    <div className='bg-white rounded-2xl p-5 w-full border border-gray-100 shadow-[0_2px_12px_rgba(0,0,0,0.08)]'>
+    <div className='themed-card rounded-2xl p-5 w-full'>
 
       <div className='flex flex-col gap-3'>
         {workOrders.map((order) => (

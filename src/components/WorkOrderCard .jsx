@@ -31,64 +31,67 @@ const WorkOrderCard = ({
   const priorityStyle = priorityStyles[priority] || { bg: 'bg-gray-100', text: 'text-gray-600' }
 
   return (
-    <div className='flex items-start justify-between border border-gray-200 rounded-xl px-4 py-4 hover:shadow-sm 
-     transition-all duration-300
-     hover:bg-gray-50 cursor-pointer hover:scale-102 
-     active:scale-98'>
+    <div className='flex items-start justify-between border rounded-xl px-4 py-4 hover:shadow-md 
+     transition-all duration-300 cursor-pointer hover:scale-102 active:scale-98'
+     style={{ 
+       backgroundColor: 'var(--bg-card)', 
+       borderColor: 'var(--border-primary)',
+     }}
+     onMouseEnter={(e) => e.currentTarget.style.backgroundColor = 'var(--bg-hover)'}
+     onMouseLeave={(e) => e.currentTarget.style.backgroundColor = 'var(--bg-card)'}
+    >
       
       <div className='flex flex-col gap-2 w-full'>
         
         <div className='flex items-center justify-between flex-wrap gap-2'>
           
           <div className='flex items-center gap-2 flex-wrap'>
-            <p className='text-sm font-semibold text-gray-800'>{title}</p>
+            <p className='text-sm font-semibold' style={{ color: 'var(--text-primary)' }}>{title}</p>
 
-            <span className={`text-xs px-2 py-0.5 rounded-md font-medium ${statusStyle.bg} ${statusStyle.text}`}>
-              {status}
+            <span className={`text-[10px] px-2 py-0.5 rounded-md font-bold uppercase tracking-wider ${statusStyle.bg} ${statusStyle.text}`}>
+              {status?.replace('-', ' ')}
             </span>
 
-            <span className={`text-xs px-2 py-0.5 rounded-md font-medium ${priorityStyle.bg} ${priorityStyle.text}`}>
+            <span className={`text-[10px] px-2 py-0.5 rounded-md font-bold uppercase tracking-wider ${priorityStyle.bg} ${priorityStyle.text}`}>
               {priority}
             </span>
           </div>
-          <span className='text-xs text-gray-400 whitespace-nowrap'>
+          <span className='text-[10px] font-bold text-gray-400 whitespace-nowrap uppercase tracking-widest'>
             #{id}
           </span>
         </div>
 
         {description && (
-          <p className='text-xs text-gray-500'>
+          <p className='text-xs leading-relaxed' style={{ color: 'var(--text-secondary)' }}>
             {description.length > 100 ? description.substring(0, 100) + '...' : description}
           </p>
         )}
 
-        <div className='flex flex-wrap items-center gap-4 text-gray-400'>
+        <div className='flex flex-wrap items-center gap-4 text-gray-400 mt-1'>
           
-          <div className='flex items-center gap-1'>
-            <Icon icon="ph:users-three" width={14} height={14} />
-            <span className='text-xs'>{assignee}</span>
+          <div className='flex items-center gap-1.5'>
+            <Icon icon="ph:users-three" width={14} height={14} className="text-gray-400" />
+            <span className='text-xs font-medium'>{assignee}</span>
           </div>
 
-          <div className='flex items-center gap-1'>
-            <Icon icon="mdi:map-marker-outline" width={14} height={14} />
-            <span className='text-xs'>{location}</span>
+          <div className='flex items-center gap-1.5'>
+            <Icon icon="mdi:map-marker-outline" width={14} height={14} className="text-gray-400" />
+            <span className='text-xs font-medium'>{location}</span>
           </div>
 
-          <div className='flex items-center gap-1'>
-            <Icon icon="mdi:calendar-outline" width={14} height={14} />
-            <span className='text-xs'>Due: {dueDate}</span>
+          <div className='flex items-center gap-1.5'>
+            <Icon icon="mdi:calendar-outline" width={14} height={14} className="text-gray-400" />
+            <span className='text-xs font-medium'>Due: {dueDate}</span>
           </div>
 
-          <div className='flex items-center gap-1'>
-            <Icon icon="mdi:clock-outline" width={14} height={14} />
-            <span className='text-xs'>{estimatedTime}</span>
+          <div className='flex items-center gap-1.5'>
+            <Icon icon="mdi:clock-outline" width={14} height={14} className="text-gray-400" />
+            <span className='text-xs font-medium'>{estimatedTime}</span>
           </div>
 
         </div>
 
       </div>
-
-      
 
     </div>
   )

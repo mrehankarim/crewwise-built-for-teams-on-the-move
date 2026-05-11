@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react'
+import { useNavigate } from 'react-router-dom'
 import SummaryCard from '../../components/SummaryCard'
 import WorkerCard from '../../components/WorkerCard'
 import { Icon } from '@iconify/react'
@@ -7,6 +8,7 @@ import { organizationAPI } from '../../api/services'
 
 const SubManagerWorkers = () => {
   const { user } = useAuth();
+  const navigate = useNavigate();
   const orgId = user?.organization?._id || user?.organization;
   const [workers, setWorkers] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -51,22 +53,22 @@ const SubManagerWorkers = () => {
     <div className='w-full px-8 pb-8'>
       <div className='flex justify-between pt-4 pb-6 animate-slideDown'>
         <div>
-          <h1 className='text-2xl font-bold'>Workers</h1>
-          <p className='text-sm text-gray-500'>View and manage assigned workers</p>
+          <h1 className='text-2xl font-bold' style={{ color: 'var(--text-primary)' }}>Workers</h1>
+          <p className='text-sm' style={{ color: 'var(--text-secondary)' }}>View and manage assigned workers</p>
         </div>
       </div>
 
       <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4">
-        <div className="animate-slideUp stagger-1"><SummaryCard name="Total Workers" count={workers.length} icon="mdi:account-group" message="All registered" iconColor="#2563EB" bgColor="#DBEAFE" /></div>
-        <div className="animate-slideUp stagger-2"><SummaryCard name="Technicians" count={techCount} icon="mdi:tools" message="Technical staff" iconColor="#F59E0B" bgColor="#FEF3C7" /></div>
-        <div className="animate-slideUp stagger-3"><SummaryCard name="Contractors" count={contractorCount} icon="mdi:briefcase-account" message="External" iconColor="#7C3AED" bgColor="#EDE9FE" /></div>
-        <div className="animate-slideUp stagger-4"><SummaryCard name="Active" count={activeCount} icon="mdi:account-check" message="Working now" iconColor="#16A34A" bgColor="#DCFCE7" /></div>
+        <div className="animate-slideUp stagger-1"><SummaryCard name="Total Workers" count={workers.length} icon="mdi:account-group" message="All registered" iconColor="#3b82f6" bgColor="rgba(59, 130, 246, 0.1)" /></div>
+        <div className="animate-slideUp stagger-2"><SummaryCard name="Technicians" count={techCount} icon="mdi:tools" message="Technical staff" iconColor="#f59e0b" bgColor="rgba(245, 158, 11, 0.1)" /></div>
+        <div className="animate-slideUp stagger-3"><SummaryCard name="Contractors" count={contractorCount} icon="mdi:briefcase-account" message="External" iconColor="#8b5cf6" bgColor="rgba(139, 92, 246, 0.1)" /></div>
+        <div className="animate-slideUp stagger-4"><SummaryCard name="Active" count={activeCount} icon="mdi:account-check" message="Working now" iconColor="#10b981" bgColor="rgba(16, 185, 129, 0.1)" /></div>
       </div>
 
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-3 pt-6">
         <input onChange={(e) => setSearch(e.target.value)} type="text" placeholder="Search workers..."
-          className="w-full px-3 py-2 border border-gray-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-bluelogo/30" id="sub-worker-search" />
-        <select className="px-3 py-2 border border-gray-200 rounded-lg text-sm bg-white" onChange={(e) => setRoleFilter(e.target.value)} id="sub-worker-role">
+          className="themed-input w-full px-3 py-2 rounded-lg text-sm focus:outline-none" id="sub-worker-search" />
+        <select className="themed-input px-3 py-2 rounded-lg text-sm" onChange={(e) => setRoleFilter(e.target.value)} id="sub-worker-role">
           <option value="">All Roles</option>
           <option value="technician">Technicians</option>
           <option value="contractor">Contractors</option>
@@ -82,18 +84,8 @@ const SubManagerWorkers = () => {
           </div>
         ) : filteredWorkers.map((w, idx) => (
           <div key={w._id} className="animate-slideUp" style={{ animationDelay: `${idx * 0.05}s` }}>
-            <WorkerCard worker={{
-              ...w,
-              status: w.workerDetails?.status || 'inactive',
-              statusColor: w.workerDetails?.status === 'active' ? 'bg-green-100 text-green-600' : 'bg-gray-100 text-gray-600',
-              email: w.email,
-              phone: w.phoneNumber || 'Not set',
-              location: w.location || 'Not set',
-              activeJobs: 0,
-              completed: 0,
-              rating: '-',
-              skills: w.workerDetails?.skills?.map(s => s.name || s) || [],
-            }} />
+            <WorkerCard worker={w}
+              onViewDetails={() => navigate(`/submanager/workers/${w._id}`)} />
           </div>
         ))}
       </div>

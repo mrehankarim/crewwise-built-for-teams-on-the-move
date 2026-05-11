@@ -6,11 +6,9 @@ import ProtectedRoute from "./components/ProtectedRoute";
 
 import AdminLayout from "./admin/pages/AdminLayout";
 import Dashboard from "./admin/pages/Dashboard";
-import WorkOrder from "./admin/pages/WorkOrder";
-import Workers from "./admin/pages/Workers";
-import Scheduler from "./admin/pages/Scheduler";
-import Attendance from "./admin/pages/Attendance";
-import Reports from "./admin/pages/Reports";
+import Users from "./admin/pages/Users";
+import Organizations from "./admin/pages/Organizations";
+import Subscriptions from "./admin/pages/Subscriptions";
 import Notifications from "./admin/pages/Notifications";
 import Profile from "./admin/pages/Profile";
 import Plans from "./admin/pages/Plans";
@@ -35,6 +33,8 @@ import SubManagerClients from "./submanager/pages/SubManagerClients";
 import SubManagerScheduler from "./submanager/pages/SubManagerScheduler";
 import SubManagerNotifications from "./submanager/pages/SubManagerNotifications";
 import SubManagerProfile from "./submanager/pages/SubManagerProfile";
+import WorkOrderDetail from "./components/WorkOrderDetail";
+import WorkerDetail from "./components/WorkerDetail";
 
 const router = createBrowserRouter([
     {
@@ -66,13 +66,11 @@ const router = createBrowserRouter([
         ),
         children: [
             { path: "admin/dashboard", element: <Dashboard /> },
-            { path: "admin/work-orders", element: <WorkOrder /> },
-            { path: "admin/workers", element: <Workers /> },
-            { path: "admin/scheduler", element: <Scheduler /> },
-            { path: "admin/attendance", element: <Attendance /> },
-            { path: "admin/reports", element: <Reports /> },
-            { path: "admin/notifications", element: <Notifications /> },
+            { path: "admin/organizations", element: <Organizations /> },
+            { path: "admin/users", element: <Users /> },
+            { path: "admin/subscriptions", element: <Subscriptions /> },
             { path: "admin/plans", element: <Plans /> },
+            { path: "admin/notifications", element: <Notifications /> },
             { path: "admin/profile", element: <Profile /> },
         ],
     },
@@ -86,7 +84,9 @@ const router = createBrowserRouter([
         children: [
             { path: "manager/dashboard", element: <ManagerDashboard /> },
             { path: "manager/work-orders", element: <ManagerWorkOrders /> },
+            { path: "manager/work-orders/:workOrderId", element: <WorkOrderDetail /> },
             { path: "manager/workers", element: <ManagerWorkers /> },
+            { path: "manager/workers/:workerId", element: <WorkerDetail /> },
             { path: "manager/clients", element: <ManagerClients /> },
             { path: "manager/inventory", element: <ManagerInventory /> },
             { path: "manager/scheduler", element: <ManagerScheduler /> },
@@ -106,7 +106,9 @@ const router = createBrowserRouter([
         children: [
             { path: "submanager/dashboard", element: <SubManagerDashboard /> },
             { path: "submanager/work-orders", element: <SubManagerWorkOrders /> },
+            { path: "submanager/work-orders/:workOrderId", element: <WorkOrderDetail /> },
             { path: "submanager/workers", element: <SubManagerWorkers /> },
+            { path: "submanager/workers/:workerId", element: <WorkerDetail /> },
             { path: "submanager/clients", element: <SubManagerClients /> },
             { path: "submanager/scheduler", element: <SubManagerScheduler /> },
             { path: "submanager/notifications", element: <SubManagerNotifications /> },

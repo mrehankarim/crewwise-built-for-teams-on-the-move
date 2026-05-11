@@ -21,7 +21,7 @@ const SubManagerClients = () => {
     if (!orgId) return;
     try {
       const res = await clientAPI.getByOrganization(orgId);
-      setClients(res.data.data || []);
+      setClients(res.data.data?.clients || []);
     } catch (err) { }
     finally { setLoading(false); }
   };
@@ -52,19 +52,19 @@ const SubManagerClients = () => {
     <div className='w-full px-8 pb-8'>
       <div className='flex justify-between pt-4 pb-6 animate-slideDown'>
         <div>
-          <h1 className='text-2xl font-bold'>Clients</h1>
-          <p className='text-sm text-gray-500'>View and manage clients</p>
+          <h1 className='text-2xl font-bold' style={{ color: 'var(--text-primary)' }}>Clients</h1>
+          <p className='text-sm' style={{ color: 'var(--text-secondary)' }}>View and manage clients</p>
         </div>
         <IconTextButton text="Add Client" icon="mdi:account-plus" onClickHandler={() => setShowCreate(true)} />
       </div>
 
       <div className="flex items-center gap-3 mb-4 animate-fadeIn">
         <div className="bg-bluelogo/10 p-3 rounded-xl"><Icon icon="mdi:account-group" width={24} className="text-bluelogo" /></div>
-        <div><p className="text-2xl font-bold text-gray-900">{clients.length}</p><p className="text-xs text-gray-500">Total Clients</p></div>
+        <div><p className="text-2xl font-bold" style={{ color: 'var(--text-primary)' }}>{clients.length}</p><p className="text-xs" style={{ color: 'var(--text-secondary)' }}>Total Clients</p></div>
       </div>
 
       <input onChange={(e) => setSearch(e.target.value)} type="text" placeholder="Search clients..."
-        className="w-full px-3 py-2 border border-gray-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-bluelogo/30 mb-4" id="sub-client-search" />
+        className="themed-input w-full px-3 py-2 rounded-lg text-sm focus:outline-none mb-4" id="sub-client-search" />
 
       <div className='space-y-3'>
         {filtered.length === 0 ? (
@@ -73,34 +73,34 @@ const SubManagerClients = () => {
             <p className="font-medium">No clients found</p>
           </div>
         ) : filtered.map((c, idx) => (
-          <div key={c._id} className="bg-white border border-gray-200 rounded-xl overflow-hidden transition-all duration-300 hover:shadow-md animate-slideUp" style={{ animationDelay: `${idx * 0.05}s` }}>
-            <div className="flex items-center justify-between px-5 py-4 cursor-pointer" onClick={() => setExpandedClient(expandedClient === c._id ? null : c._id)}>
+          <div key={c._id} className="themed-card border overflow-hidden transition-all duration-300 hover:shadow-md animate-slideUp" style={{ animationDelay: `${idx * 0.05}s`, borderColor: 'var(--border-primary)' }}>
+            <div className="flex items-center justify-between px-5 py-4 cursor-pointer hover:bg-black/5 dark:hover:bg-white/5 transition-colors" onClick={() => setExpandedClient(expandedClient === c._id ? null : c._id)}>
               <div className="flex items-center gap-4">
                 <div className="w-10 h-10 bg-gradient-to-br from-bluelogo to-blue-400 rounded-full flex items-center justify-center text-white font-bold text-sm">
                   {c.name?.charAt(0)?.toUpperCase()}
                 </div>
                 <div>
-                  <p className="font-semibold text-sm text-gray-800">{c.name}</p>
-                  <p className="text-xs text-gray-500">{c.email}</p>
+                  <p className="font-semibold text-sm" style={{ color: 'var(--text-primary)' }}>{c.name}</p>
+                  <p className="text-xs" style={{ color: 'var(--text-secondary)' }}>{c.email}</p>
                 </div>
               </div>
               <div className="flex items-center gap-3">
-                <span className="text-xs text-gray-400">{c.locations?.length || 0} locations</span>
-                <Icon icon={expandedClient === c._id ? "mdi:chevron-up" : "mdi:chevron-down"} width={20} className="text-gray-400" />
+                <span className="text-xs" style={{ color: 'var(--text-secondary)' }}>{c.locations?.length || 0} locations</span>
+                <Icon icon={expandedClient === c._id ? "mdi:chevron-up" : "mdi:chevron-down"} width={20} style={{ color: 'var(--text-secondary)' }} />
               </div>
             </div>
             {expandedClient === c._id && (
-              <div className="border-t border-gray-100 px-5 py-4 bg-gray-50/50 animate-slideDown">
-                <div className="flex items-center gap-4 text-sm text-gray-600 mb-3">
+              <div className="border-t px-5 py-4 animate-slideDown" style={{ borderColor: 'var(--border-secondary)', background: 'var(--bg-secondary)' }}>
+                <div className="flex items-center gap-4 text-sm mb-3" style={{ color: 'var(--text-secondary)' }}>
                   <div className="flex items-center gap-1"><Icon icon="mdi:phone" width={14} />{c.phoneNumber}</div>
                   {c.notes && <div className="flex items-center gap-1"><Icon icon="mdi:note-text" width={14} />{c.notes}</div>}
                 </div>
-                <p className="text-xs font-semibold text-gray-700 mb-2">Locations</p>
+                <p className="text-xs font-semibold mb-2" style={{ color: 'var(--text-primary)' }}>Locations</p>
                 {c.locations?.length > 0 ? c.locations.map(loc => (
-                  <div key={loc._id} className="bg-white rounded-lg px-3 py-2 mb-1 border border-gray-100">
-                    <p className="text-xs text-gray-600">{loc.address}, {loc.city}, {loc.state} {loc.postalCode}</p>
+                  <div key={loc._id} className="themed-card rounded-lg px-3 py-2 mb-1 border" style={{ borderColor: 'var(--border-secondary)' }}>
+                    <p className="text-xs" style={{ color: 'var(--text-secondary)' }}>{loc.address}, {loc.city}, {loc.state} {loc.postalCode}</p>
                   </div>
-                )) : <p className="text-xs text-gray-400">No locations added</p>}
+                )) : <p className="text-xs" style={{ color: 'var(--text-tertiary)' }}>No locations added</p>}
               </div>
             )}
           </div>
@@ -110,24 +110,24 @@ const SubManagerClients = () => {
       <Modal isOpen={showCreate} onClose={() => setShowCreate(false)} title="Add Client" size="md">
         <form onSubmit={handleCreate} className="space-y-4">
           <div>
-            <label className="block text-sm font-semibold text-gray-700 mb-1">Name *</label>
+            <label className="block text-sm font-semibold mb-1" style={{ color: 'var(--text-secondary)' }}>Name *</label>
             <input type="text" value={form.name} onChange={(e) => setForm(f => ({ ...f, name: e.target.value }))}
-              className="w-full bg-gray-50 rounded-lg border border-gray-200 py-2.5 px-4 text-sm outline-none focus:ring-2 focus:ring-bluelogo/30" id="sub-client-name" />
+              className="themed-input w-full py-2.5 px-4 text-sm outline-none" id="sub-client-name" />
           </div>
           <div>
-            <label className="block text-sm font-semibold text-gray-700 mb-1">Email *</label>
+            <label className="block text-sm font-semibold mb-1" style={{ color: 'var(--text-secondary)' }}>Email *</label>
             <input type="email" value={form.email} onChange={(e) => setForm(f => ({ ...f, email: e.target.value }))}
-              className="w-full bg-gray-50 rounded-lg border border-gray-200 py-2.5 px-4 text-sm outline-none focus:ring-2 focus:ring-bluelogo/30" id="sub-client-email" />
+              className="themed-input w-full py-2.5 px-4 text-sm outline-none" id="sub-client-email" />
           </div>
           <div>
-            <label className="block text-sm font-semibold text-gray-700 mb-1">Phone *</label>
+            <label className="block text-sm font-semibold mb-1" style={{ color: 'var(--text-secondary)' }}>Phone *</label>
             <input type="text" value={form.phoneNumber} onChange={(e) => setForm(f => ({ ...f, phoneNumber: e.target.value }))}
-              className="w-full bg-gray-50 rounded-lg border border-gray-200 py-2.5 px-4 text-sm outline-none focus:ring-2 focus:ring-bluelogo/30" id="sub-client-phone" />
+              className="themed-input w-full py-2.5 px-4 text-sm outline-none" id="sub-client-phone" />
           </div>
           <div>
-            <label className="block text-sm font-semibold text-gray-700 mb-1">Notes</label>
+            <label className="block text-sm font-semibold mb-1" style={{ color: 'var(--text-secondary)' }}>Notes</label>
             <textarea value={form.notes} onChange={(e) => setForm(f => ({ ...f, notes: e.target.value }))} rows={2}
-              className="w-full bg-gray-50 rounded-lg border border-gray-200 py-2.5 px-4 text-sm outline-none focus:ring-2 focus:ring-bluelogo/30 resize-none" id="sub-client-notes" />
+              className="themed-input w-full py-2.5 px-4 text-sm outline-none resize-none" id="sub-client-notes" />
           </div>
           <button type="submit" disabled={creating}
             className="w-full bg-bluelogo text-white py-3 rounded-xl font-semibold text-sm transition-all hover:shadow-lg disabled:opacity-50 flex items-center justify-center gap-2" id="sub-client-submit">

@@ -54,15 +54,7 @@ const SubManagerDashboard = () => {
     fetchData();
   }, [orgId]);
 
-  const chartData = [
-    { day: 'Mon', completed: stats?.workOrders?.completed || 0, assigned: stats?.workOrders?.assigned || 0 },
-    { day: 'Tue', completed: Math.floor(Math.random() * 10) + 5, assigned: Math.floor(Math.random() * 10) + 8 },
-    { day: 'Wed', completed: Math.floor(Math.random() * 10) + 5, assigned: Math.floor(Math.random() * 10) + 8 },
-    { day: 'Thu', completed: Math.floor(Math.random() * 10) + 5, assigned: Math.floor(Math.random() * 10) + 8 },
-    { day: 'Fri', completed: Math.floor(Math.random() * 10) + 5, assigned: Math.floor(Math.random() * 10) + 8 },
-    { day: 'Sat', completed: Math.floor(Math.random() * 5), assigned: Math.floor(Math.random() * 5) + 2 },
-    { day: 'Sun', completed: Math.floor(Math.random() * 3), assigned: Math.floor(Math.random() * 3) + 1 },
-  ];
+  const chartData = stats?.weeklyPerformance || [];
 
   if (loading) {
     return (
@@ -85,8 +77,8 @@ const SubManagerDashboard = () => {
     <div className='w-full px-8 pb-8'>
       <div className='flex justify-between pt-4 pb-6 animate-slideDown'>
         <div>
-          <h1 className='text-2xl font-bold text-gray-900'>Sub-Manager Dashboard</h1>
-          <p className='text-sm text-gray-500'>{user?.organization?.name || 'Your Organization'}</p>
+          <h1 className='text-2xl font-bold' style={{ color: 'var(--text-primary)' }}>Sub-Manager Dashboard</h1>
+          <p className='text-sm' style={{ color: 'var(--text-tertiary)' }}>{user?.organization?.name || 'Your Organization'}</p>
         </div>
         <div>
           <IconTextButton text={"Create Work Order"} icon="akar-icons:clipboard" onClickHandler={() => window.location.href = '/submanager/work-orders'} />
@@ -95,16 +87,16 @@ const SubManagerDashboard = () => {
 
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
         <div className="animate-slideUp stagger-1">
-          <SummaryCard name="Total Work Orders" count={stats?.workOrders?.total || 0} icon="akar-icons:clipboard" message={`${stats?.workOrders?.inProgress || 0} in progress`} iconColor="#2262C2" bgColor="#BAD2F0" />
+          <SummaryCard name="Total Work Orders" count={stats?.workOrders?.total || 0} icon="akar-icons:clipboard" message={`${stats?.workOrders?.inProgress || 0} in progress`} iconColor="#3b82f6" bgColor="rgba(59, 130, 246, 0.1)" />
         </div>
         <div className="animate-slideUp stagger-2">
-          <SummaryCard name="Field Workers" count={stats?.team?.totalWorkers || 0} icon="fluent:people-12-regular" message={`${stats?.team?.technicians || 0} technicians`} iconColor="#367B43" bgColor="#C3EFCF" />
+          <SummaryCard name="Field Workers" count={stats?.team?.totalWorkers || 0} icon="fluent:people-12-regular" message={`${stats?.team?.technicians || 0} technicians`} iconColor="#10b981" bgColor="rgba(16, 185, 129, 0.1)" />
         </div>
         <div className="animate-slideUp stagger-3">
-          <SummaryCard name="Pending Tasks" count={stats?.workOrders?.created || 0} icon="akar-icons:clock" message={`${stats?.workOrders?.assigned || 0} assigned`} iconColor="#9E3333" bgColor="#F0D6CE" />
+          <SummaryCard name="Pending Tasks" count={stats?.workOrders?.created || 0} icon="akar-icons:clock" message={`${stats?.workOrders?.assigned || 0} assigned`} iconColor="#f59e0b" bgColor="rgba(245, 158, 11, 0.1)" />
         </div>
         <div className="animate-slideUp stagger-4">
-          <SummaryCard name="Completed" count={stats?.workOrders?.completed || 0} icon="lets-icons:done-ring-round" message={stats?.workOrders?.total ? `${Math.round((stats.workOrders.completed / stats.workOrders.total) * 100)}% rate` : '0% rate'} iconColor="#367B43" bgColor="#C3EFCF" />
+          <SummaryCard name="Completed" count={stats?.workOrders?.completed || 0} icon="lets-icons:done-ring-round" message={stats?.workOrders?.total ? `${Math.round((stats.workOrders.completed / stats.workOrders.total) * 100)}% rate` : '0% rate'} iconColor="#8b5cf6" bgColor="rgba(139, 92, 246, 0.1)" />
         </div>
       </div>
 
@@ -120,7 +112,10 @@ const SubManagerDashboard = () => {
       </div>
 
       <div className='pt-6 animate-fadeIn'>
-        <RecentWorkOrders workOrders={workOrders} />
+        <RecentWorkOrders 
+          workOrders={workOrders} 
+          onViewAll={() => window.location.href = '/submanager/work-orders'} 
+        />
       </div>
     </div>
   )

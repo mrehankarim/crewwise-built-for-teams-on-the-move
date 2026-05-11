@@ -2,10 +2,12 @@ import { Icon } from "@iconify/react";
 import { NavLink, useNavigate } from "react-router-dom";
 import { useAuth } from "../../context/AuthContext";
 import { useTheme } from "../../context/ThemeContext";
+import { useNotification } from "../../context/NotificationContext";
 
 const Sidebar = ({ role, username, routes, showMenu, setShowMenu }) => {
     const { logout } = useAuth();
     const { isDark, toggleTheme } = useTheme();
+    const { unreadCount } = useNotification();
     const navigate = useNavigate();
 
     const handleLogout = async () => {
@@ -84,7 +86,12 @@ const Sidebar = ({ role, username, routes, showMenu, setShowMenu }) => {
                                 }}
                             >
                                 <Icon icon={route.icon} width={22} height={22} />
-                                <span className="text-sm">{route.text}</span>
+                                <span className="text-sm flex-1">{route.text}</span>
+                                {route.text === "Notifications" && unreadCount > 0 && (
+                                    <span className="bg-red-500 text-white text-[10px] font-bold px-1.5 py-0.5 rounded-full min-w-[18px] text-center">
+                                        {unreadCount > 99 ? '99+' : unreadCount}
+                                    </span>
+                                )}
                             </NavLink>
                         ))}
                     </nav>

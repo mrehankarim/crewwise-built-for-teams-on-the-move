@@ -1,22 +1,24 @@
 import React from 'react'
 import WorkOrderCard from '../WorkOrderCard '
 
-const RecentWorkOrders = ({ workOrders = [] }) => {
+const RecentWorkOrders = ({ workOrders = [], onViewAll }) => {
   return (
-    <div className='bg-white rounded-2xl p-5 w-full border border-gray-100 shadow-[0_2px_12px_rgba(0,0,0,0.08)]'>
+    <div className='themed-card rounded-2xl p-5 w-full'>
 
-      <div className='flex justify-between items-start mb-3'>
+      <div className='flex justify-between items-center mb-4'>
         <div>
-          <h2 className='text-base font-semibold text-gray-800'>Recent Work Orders</h2>
-          <p className='text-xs text-gray-400 mt-0.5'>Latest work order assignments</p>
+          <h2 className='text-base font-bold' style={{ color: 'var(--text-primary)' }}>Recent Work Orders</h2>
+          <p className='text-xs' style={{ color: 'var(--text-tertiary)' }}>Latest service requests</p>
         </div>
-        <button className='text-xs bg-black border border-black px-3 py-1.5 rounded-lg text-white  transition-all duration-200 cursor-pointer
-        hover:shadow-lg hover:scale-[1.02] active:scale-[0.98] focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-black whitespace-nowrap'>
+        <button 
+          onClick={onViewAll}
+          className='text-xs bg-black border border-black px-3 py-1.5 rounded-lg text-white transition-all duration-200 cursor-pointer hover:shadow-lg hover:scale-[1.02] active:scale-[0.98] focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-black whitespace-nowrap'
+        >
           View All
         </button>
       </div>
 
-      <div className='border-t border-gray-100 mb-3' />
+      <div className='mb-4' style={{ borderTop: '1px solid var(--border-secondary)' }} />
 
       <div className='flex flex-col gap-3'>
         {workOrders.map((order) => (
